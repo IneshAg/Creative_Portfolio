@@ -126,30 +126,30 @@ const GiantMonitorForeground = () => {
       <div ref={ref} style={{ width: 'clamp(320px,42vw,580px)', transformOrigin: 'left center', willChange: 'transform' }}>
         {/* Bezel */}
         <div style={{
-          background: '#05050d',
-          border: '3px solid rgba(0,255,225,0.12)',
-          borderRadius: '4px',
+          background: '#070712',
+          border: '4px solid rgba(0,255,225,0.25)',
+          borderRadius: '6px',
           overflow: 'hidden',
-          boxShadow: '0 0 0 1px rgba(0,255,225,0.06), 12px 24px 80px rgba(0,0,0,0.9), 0 0 60px rgba(0,255,225,0.04)',
+          boxShadow: '0 0 0 1px rgba(0,255,225,0.15), 15px 30px 100px rgba(0,0,0,0.95), 0 0 80px rgba(0,255,225,0.15)',
         }}>
           {/* Browser bar */}
-          <div style={{ height: '22px', background: '#030308', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', padding: '0 8px', gap: '4px' }}>
-            {['#ff5f57','#febc2e','#28c840'].map((c,i) => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: c, opacity: 0.7 }} />)}
-            <div style={{ marginLeft: '8px', flex: 1, height: '11px', background: 'rgba(255,255,255,0.03)', borderRadius: '2px' }} />
+          <div style={{ height: '24px', background: '#05050d', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', padding: '0 10px', gap: '5px' }}>
+            {['#ff5f57','#febc2e','#28c840'].map((c,i) => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: c, opacity: 0.8 }} />)}
+            <div style={{ marginLeft: '10px', flex: 1, height: '12px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px' }} />
           </div>
           {/* Corrupted screen */}
-          <div style={{ height: 'clamp(120px,18vh,230px)', background: 'linear-gradient(135deg, #040410 0%, #080820 100%)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 6px)' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 40% 50%, rgba(0,255,225,0.05) 0%, transparent 70%)' }} />
+          <div style={{ height: 'clamp(120px,18vh,230px)', background: 'linear-gradient(135deg, #07071a 0%, #0a0a28 100%)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.20) 3px, rgba(0,0,0,0.20) 6px)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 40% 50%, rgba(0,255,225,0.15) 0%, transparent 80%)' }} />
             {/* Glitch lines */}
             {[22, 45, 63, 78].map((top, i) => (
-              <div key={i} style={{ position: 'absolute', top: `${top}%`, left: `${10 + i * 12}%`, width: `${20 + i * 8}%`, height: '1px', background: `rgba(0,255,225,${0.08 + i * 0.04})` }} />
+              <div key={i} style={{ position: 'absolute', top: `${top}%`, left: `${10 + i * 12}%`, width: `${20 + i * 8}%`, height: '2px', background: `rgba(0,255,225,${0.2 + i * 0.1})`, boxShadow: '0 0 10px rgba(0,255,225,0.4)' }} />
             ))}
           </div>
         </div>
         {/* Stand */}
-        <div style={{ width: '30%', height: '8px', background: '#030307', margin: '0 auto', borderBottom: '1px solid rgba(255,255,255,0.03)' }} />
-        <div style={{ width: '18%', height: '3px', background: '#020205', margin: '0 auto' }} />
+        <div style={{ width: '30%', height: '10px', background: '#05050a', margin: '0 auto', borderBottom: '1px solid rgba(255,255,255,0.06)' }} />
+        <div style={{ width: '18%', height: '4px', background: '#030307', margin: '0 auto' }} />
       </div>
     </div>
   );
@@ -181,19 +181,19 @@ const FloatingKeyboard = () => {
   }, []);
 
   return (
-    <div style={{ position: 'absolute', right: 'clamp(2%, 4vw, 7%)', top: '48vh', zIndex: 6, pointerEvents: 'none', opacity: 0.45 }}>
+    <div style={{ position: 'absolute', right: 'clamp(2%, 4vw, 7%)', top: '48vh', zIndex: 6, pointerEvents: 'none', opacity: 0.85 }}>
       <div ref={ref} style={{ transformOrigin: 'center center', willChange: 'transform' }}>
-        <div style={{ background: '#06060e', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '4px', width: 'clamp(140px,18vw,240px)' }}>
+        <div style={{ background: '#0a0a14', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: '5px', width: 'clamp(140px,18vw,240px)', boxShadow: '0 20px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,255,225,0.05)' }}>
           {keys.map((count, row) => (
-            <div key={row} style={{ display: 'flex', gap: '3px', justifyContent: row === keys.length - 1 ? 'center' : 'flex-start' }}>
+            <div key={row} style={{ display: 'flex', gap: '4px', justifyContent: row === keys.length - 1 ? 'center' : 'flex-start' }}>
               {Array.from({ length: count }, (_, k) => (
                 <div key={k} style={{
                   flex: row === keys.length - 1 && k === 2 ? 3 : 1,
-                  height: 'clamp(8px,1.2vw,14px)',
-                  background: Math.random() > 0.85 ? 'rgba(0,255,225,0.15)' : 'rgba(255,255,255,0.05)',
-                  borderRadius: '1px',
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  boxShadow: Math.random() > 0.92 ? '0 0 4px rgba(0,255,225,0.2)' : undefined,
+                  height: 'clamp(10px,1.4vw,18px)',
+                  background: Math.random() > 0.8 ? 'rgba(0,255,225,0.35)' : 'rgba(255,255,255,0.12)',
+                  borderRadius: '2px',
+                  border: '1px solid rgba(255,255,255,0.10)',
+                  boxShadow: Math.random() > 0.8 ? '0 0 8px rgba(0,255,225,0.4)' : 'inset 0 1px 2px rgba(255,255,255,0.05)',
                 }} />
               ))}
             </div>

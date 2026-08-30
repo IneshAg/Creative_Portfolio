@@ -317,58 +317,6 @@ const InsaneCore = () => {
   );
 };
 
-const CrashingMonoliths = () => {
-  const count = 60;
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  
-  const particles = useMemo(() => {
-    const temp = [];
-    for (let i = 0; i < count; i++) {
-      const theta = Math.random() * 2 * Math.PI;
-      const phi = Math.acos((Math.random() * 2) - 1);
-      const r = 15 + Math.random() * 40;
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.sin(phi) * Math.sin(theta);
-      const z = r * Math.cos(phi) - 35;
-      temp.push({
-        position: new THREE.Vector3(x, y, z),
-        rotation: new THREE.Vector3(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI),
-        scale: new THREE.Vector3(1 + Math.random() * 4, 10 + Math.random() * 30, 1 + Math.random() * 4),
-        speed: 1.0 + Math.random() * 3.0,
-      });
-    }
-    return temp;
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return;
-    const t = clock.getElapsedTime();
-    particles.forEach((p, i) => {
-      dummy.position.copy(p.position);
-      const angle = t * p.speed * 0.2;
-      const currentX = p.position.x;
-      const currentZ = p.position.z + 35;
-      dummy.position.x = currentX * Math.cos(angle) - currentZ * Math.sin(angle);
-      dummy.position.z = currentX * Math.sin(angle) + currentZ * Math.cos(angle) - 35;
-      dummy.position.y = p.position.y + Math.sin(t * p.speed * 5.0 + i) * 4.0;
-      dummy.rotation.x = p.rotation.x + t * p.speed * 0.5;
-      dummy.rotation.y = p.rotation.y + t * p.speed * 0.5;
-      dummy.scale.copy(p.scale);
-      dummy.updateMatrix();
-      meshRef.current!.setMatrixAt(i, dummy.matrix);
-    });
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#08080a" roughness={0.7} metalness={0.8} />
-    </instancedMesh>
-  );
-};
-
 // ─── MAIN EXPORT ───────────────────────────────────────────────────────────────
 export const AbyssScene = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -406,7 +354,7 @@ export const AbyssScene = () => {
 
       {/* Original elements */}
       <InsaneCore />
-      <CrashingMonoliths />
+      {/* Removed CrashingMonoliths to clear space for the new DigitalEnvironment void focus */}
 
       {/* New brain / psychedelic elements */}
       <BrainWaveRibbons />
