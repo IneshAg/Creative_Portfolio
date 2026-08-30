@@ -1,4 +1,5 @@
 import React from 'react';
+import { Play } from 'lucide-react';
 import { AudioWaveform } from '../../audio/AudioWaveform';
 
 interface RoomSceneProps {
@@ -29,7 +30,7 @@ export const RoomScene: React.FC<RoomSceneProps> = ({
           ============================================================ */}
       <div
         onClick={onToggleAudio}
-        className="group absolute cursor-pointer z-30 pointer-events-auto"
+        className="group absolute cursor-pointer z-30 pointer-events-auto flex items-center justify-center"
         style={{
           left: '9%',
           top: '34%',
@@ -38,13 +39,26 @@ export const RoomScene: React.FC<RoomSceneProps> = ({
         }}
         title={isPlaying ? 'Click to pause vinyl' : 'Click to spin vinyl & play audio'}
       >
-        {/* Subtle Status Cue above the Turntable */}
+        {/* Prominent Play Overlay when Paused */}
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 group-hover:scale-110">
+            <div className="absolute w-12 h-12 bg-[#e8a84a]/20 rounded-full animate-ping" />
+            <div className="relative w-12 h-12 bg-black/60 backdrop-blur-sm border-2 border-[#e8a84a] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(232,168,74,0.4)]">
+              <Play className="text-[#e8a84a] ml-1" size={20} fill="currentColor" />
+            </div>
+          </div>
+        )}
+
+        {/* Status Cue above the Turntable */}
         <div
-          className="absolute -top-7 left-0 flex items-center gap-2 font-mono text-[10px] sm:text-xs tracking-widest text-[#e8a84a] px-2 py-0.5 rounded bg-black/50 backdrop-blur-sm border border-[#e8a84a]/30 transition-all duration-300 group-hover:border-[#e8a84a] group-hover:bg-black/70 shadow-lg"
-          style={{ opacity: isPlaying ? 1 : 0.85 }}
+          className={`absolute -top-10 sm:-top-12 left-1/2 transform -translate-x-1/2 flex items-center gap-2.5 font-mono text-xs sm:text-sm tracking-[0.25em] font-bold px-3 py-1.5 rounded-lg backdrop-blur-md transition-all duration-300 shadow-xl ${
+            isPlaying 
+              ? 'text-[#00ffe1] bg-black/60 border border-[#00ffe1]/30' 
+              : 'text-[#e8a84a] bg-black/80 border border-[#e8a84a] group-hover:bg-black group-hover:scale-105 shadow-[0_0_15px_rgba(232,168,74,0.3)]'
+          }`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-[#e8a84a]'}`} />
-          <span>{isPlaying ? 'NOW PLAYING' : 'PLAY VINYL'}</span>
+          <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-[#00ffe1] animate-ping' : 'bg-[#e8a84a]'}`} />
+          <span className="whitespace-nowrap">{isPlaying ? 'NOW PLAYING' : 'PLAY VINYL'}</span>
         </div>
 
         {/* Real-time Subtle Waveform Ribbon below turntable */}
