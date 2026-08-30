@@ -6,7 +6,7 @@ import { SvgDefs } from './components/SvgDefs';
 import { RoomScene } from './components/RoomWorld/RoomScene';
 import { WorldTransition } from './components/CorruptionTransition/WorldTransition';
 import { DigitalWorld } from './components/DigitalWorld/DigitalWorld';
-import { WorkSection } from './components/DigitalWorld/WorkSection';
+import { DigitalEnvironment } from './components/DigitalWorld/DigitalEnvironment';
 import { ReturnPortal } from './components/ReturnWorld/ReturnPortal';
 import { Navigation } from './components/Navigation';
 import { audioManager } from './audio/AudioManager';
@@ -162,7 +162,7 @@ export function App() {
           DIGITAL FLOW: PHYSICAL WORK ARTIFACTS & RETURN WINDOW
           ============================================================ */}
       <main className="digital-flow relative z-30">
-        <WorkSection />
+        <DigitalEnvironment />
         <ReturnPortal onReturnHome={handleReturnHome} isReturning={isReturning} />
       </main>
 
