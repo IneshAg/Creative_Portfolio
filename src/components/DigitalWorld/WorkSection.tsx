@@ -34,63 +34,47 @@ const PROJECTS = [
 const ProjectCard = ({
   project,
   index,
-  total,
+  isActive,
   onClick,
 }: {
   project: typeof PROJECTS[0];
   index: number;
-  total: number;
+  isActive: boolean;
   onClick: () => void;
 }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [scrollRatio, setScrollRatio] = useState(0);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const rect = el.getBoundingClientRect();
-      const winH = window.innerHeight;
-      // 0 = card just entering from bottom, 1 = card at top
-      const ratio = 1 - Math.max(0, Math.min(1, rect.top / winH));
-      setScrollRatio(ratio);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  // Stacking: each card sits at a slightly higher position
-  // as it scrolls into view it rises forward (scale up, translateY up)
-  // the previous one scales slightly down and recedes
-  const stackOffset = index * 10; // pixels pushed down from top when stacked
-  const translateY = -Math.min(stackOffset, scrollRatio * stackOffset * 1.4);
-  const scale = 0.92 + index * 0.026 + scrollRatio * 0.04;
+  const scale = isActive ? 1.0 : 0.94;
+  const opacity = isActive ? 1 : 0.55;
+  const glow = isActive
+    ? `0 0 0 1px ${project.color}40, 0 24px 80px rgba(0,0,0,0.8), 0 0 40px ${project.color}18`
+    : `0 0 0 1px ${project.color}10, 0 12px 40px rgba(0,0,0,0.6)`;
 
   return (
     <div
-      ref={cardRef}
       style={{
         position: 'sticky',
-        top: `${60 + index * 28}px`,
+        top: `${60 + index * 24}px`,
         zIndex: 10 + index,
-        transform: `translateY(${translateY}px) scale(${Math.min(scale, 1)})`,
+        transition: 'transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease',
+        transform: `scale(${scale})`,
         transformOrigin: 'center top',
-        transition: 'transform 0.12s linear',
-        marginBottom: index < total - 1 ? '0' : '0',
+        opacity,
+        marginBottom: 0,
       }}
     >
       <div
         onClick={onClick}
         className="group cursor-pointer w-full max-w-3xl mx-auto bg-[#0d0d1a]/95 backdrop-blur-sm border border-white/8 rounded-2xl overflow-hidden"
-        style={{
-          boxShadow: `0 0 0 1px ${project.color}15, 0 30px 80px rgba(0,0,0,0.7)`,
-        }}
+        style={{ boxShadow: glow, transition: 'box-shadow 0.4s ease' }}
       >
         {/* Top accent line */}
-        <div className="h-[1px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${project.color}, transparent)` }} />
+        <div
+          className="h-[1px] w-full transition-all duration-500"
+          style={{
+            background: isActive
+              ? `linear-gradient(90deg, transparent, ${project.color}, transparent)`
+              : `linear-gradient(90deg, transparent, ${project.color}40, transparent)`,
+          }}
+        />
 
         <div className="p-8 sm:p-10">
           {/* Header row */}
@@ -104,7 +88,11 @@ const ProjectCard = ({
               </span>
               <span
                 className="font-mono text-[9px] tracking-[0.3em] px-2.5 py-0.5 rounded border"
-                style={{ color: project.color, borderColor: `${project.color}40`, background: `${project.color}10` }}
+                style={{
+                  color: project.color,
+                  borderColor: `${project.color}40`,
+                  background: `${project.color}10`,
+                }}
               >
                 {project.tag}
               </span>
@@ -115,9 +103,7 @@ const ProjectCard = ({
           </div>
 
           {/* Title */}
-          <h3
-            className="font-grotesk font-bold text-3xl sm:text-4xl text-white tracking-tight mb-3 group-hover:text-opacity-90 transition-all"
-          >
+          <h3 className="font-grotesk font-bold text-3xl sm:text-4xl text-white tracking-tight mb-3">
             {project.title}
           </h3>
 
@@ -128,7 +114,12 @@ const ProjectCard = ({
         </div>
 
         {/* Bottom accent line */}
-        <div className="h-[1px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${project.color}50, transparent)` }} />
+        <div
+          className="h-[1px] w-full"
+          style={{
+            background: `linear-gradient(90deg, transparent, ${project.color}${isActive ? '60' : '20'}, transparent)`,
+          }}
+        />
       </div>
     </div>
   );
@@ -136,6 +127,35 @@ const ProjectCard = ({
 
 export const WorkSection: React.FC = () => {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const winH = window.innerHeight;
+      const midY = winH * 0.45; // treat 45% from top as "focus zone"
+
+      let bestIndex = 0;
+      let bestDist = Infinity;
+
+      cardRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const cardMid = rect.top + rect.height / 2;
+        const dist = Math.abs(cardMid - midY);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIndex = i;
+        }
+      });
+
+      setActiveIndex(bestIndex);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <section
@@ -181,19 +201,21 @@ export const WorkSection: React.FC = () => {
       {/* Stacked project cards */}
       <div style={{ position: "relative" }}>
         {PROJECTS.map((project, i) => (
-          <React.Fragment key={project.id}>
+          <div
+            key={project.id}
+            ref={(el) => { cardRefs.current[i] = el; }}
+          >
             <ProjectCard
               project={project}
               index={i}
-              total={PROJECTS.length}
+              isActive={activeIndex === i}
               onClick={() => setActiveProjectId(project.id)}
             />
-            {/* Divider line between cards (not after last) */}
             {i < PROJECTS.length - 1 && (
               <div
                 style={{
                   height: '1px',
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'rgba(255,255,255,0.04)',
                   margin: '0 auto',
                   maxWidth: '48rem',
                   position: 'relative',
@@ -201,7 +223,7 @@ export const WorkSection: React.FC = () => {
                 }}
               />
             )}
-          </React.Fragment>
+          </div>
         ))}
       </div>
 
