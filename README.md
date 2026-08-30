@@ -1,32 +1,45 @@
-# React + TypeScript + Vite
+# Inesh Agarwal — Creative Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A portfolio designed as an explorable digital world. One continuous environment — a room, a rupture, a universe, and a way back.
 
-Currently, two official plugins are available:
+## 🌌 The Concept
+Conventional design portfolios reduce work into isolated mockup cards. This project treats the portfolio itself as the primary interactive design artifact. You start in an intimate, cozy 2 AM room with a vinyl player, and as you scroll, the environment physically shatters and dissolves into a chaotic, infinite digital abyss where the project case studies reside.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Features & Engineering
 
-## React Compiler
+- **Hardware-Accelerated HTML5 Canvas Engine**: Custom scroll-driven 60 FPS pipeline bridging 2D DOM elements and WebGL.
+- **Procedural Web Audio Synthesizer**: The soundtrack isn't just played; it is orchestrated procedurally in real-time. Features Brownian noise filter buffers (simulating needle friction), dynamic lowpass filters, and Ryoji Ikeda-style glitch ruptures seamlessly synced to your scroll depth.
+- **3D WebGL Integration**: Utilizes custom Three.js shader materials and geometric physics for the monolithic structures and the pulsing core in the Digital Abyss.
+- **Interactive Case Studies**: In-world, floating artifact viewers detailing UX Research, Wireframes, and UI Visual language, complete with external Figma prototypes.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 💻 Tech Stack
+- **Framework:** React 18 + TypeScript + Vite
+- **Styling:** TailwindCSS
+- **Animation:** Framer Motion, Lenis Smooth Scroll
+- **3D / Graphics:** Three.js, React Three Fiber, HTML5 Canvas
+- **Audio:** Native Web Audio API (`AudioContext`, `BiquadFilterNode`, `MediaElementAudioSourceNode`)
 
-## Expanding the Oxlint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+To run this project locally:
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/IneshAg/Creative_Portfolio.git
+   ```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+4. **Explore**  
+   Open `http://localhost:5173` in your browser. Don't forget to click the Vinyl Player!
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 👤 Author
+**Inesh Agarwal**
+- Email: ineshag123@gmail.com
+- LinkedIn: [inesh-agarwal](https://linkedin.com/in/inesh-agarwal)
+- GitHub: [IneshAg](https://github.com/IneshAg)
