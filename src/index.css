@@ -1,0 +1,469 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cozy-bg: #1a0800;
+  --color-cozy-dark: #3d1a0a;
+  --color-cozy-rust: #8b3a1a;
+  --color-cozy-amber: #c4621a;
+  --color-cozy-glow: #e8a84a;
+  --color-cozy-deep: #0d0d1a;
+
+  --color-digital-void: #06060d;
+  --color-digital-space: #0d0d1a;
+  --color-digital-cyan: #00ffe1;
+  --color-digital-purple: #b400ff;
+  --color-digital-surface: #1a1a2e;
+  --color-digital-text: #ffffff;
+  --color-digital-dim: #8f90a6;
+
+  --font-grotesk: "Cabinet Grotesk", "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-mono-sys: "JetBrains Mono", "Fira Code", monospace;
+  --font-pixel: "Press Start 2P", monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #06060d;
+}
+::-webkit-scrollbar-thumb {
+  background: #252538;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00ffe1;
+}
+
+/* Pixel Rendering Utilities */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.font-mono-sys {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Scanlines overlay */
+.scanlines-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.4) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 255, 0, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+}
+
+/* Keyframe animations */
+@keyframes spinRecord {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes lampFlicker {
+  0%, 100% { opacity: 0.95; filter: brightness(1); }
+  28% { opacity: 0.95; filter: brightness(1); }
+  30% { opacity: 0.75; filter: brightness(0.85); }
+  32% { opacity: 0.98; filter: brightness(1.05); }
+  70% { opacity: 0.95; filter: brightness(1); }
+  72% { opacity: 0.82; filter: brightness(0.9); }
+  73% { opacity: 0.95; filter: brightness(1); }
+}
+
+.animate-spin-slow {
+  animation: spinRecord 12s linear infinite;
+}
+
+.animate-spin-record {
+  animation: spinRecord 2.4s linear infinite;
+}
+
+.animate-lamp-flicker {
+  animation: lampFlicker 6s infinite ease-in-out;
+}
+
+/* ---------- Digital world: dense sharp chaos ---------- */
+.digital-layer {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #06060d;
+  overflow: hidden;
+}
+
+.digital-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.dig-frag {
+  position: absolute;
+  pointer-events: none;
+}
+
+.chaos-plane {
+  inset: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.chaos-plane img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Sharp, detailed, pixel-visible background planes */
+.chaos-far {
+  opacity: 0.75;
+  transform: scale(1.1);
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.chaos-main {
+  opacity: 0.95;
+  filter: brightness(1.0) contrast(1.1);
+}
+
+.chaos-fore {
+  opacity: 0.98;
+  mix-blend-mode: screen;
+  transform: scale(1.2) rotate(-2deg);
+  filter: brightness(1.1);
+}
+
+.chaos-wave {
+  position: absolute;
+  left: -10%;
+  top: 38%;
+  width: 120%;
+  pointer-events: none;
+  transform: rotate(-4deg);
+}
+
+.wave-ribbon-svg {
+  width: 100%;
+  height: 160px;
+  display: block;
+  animation: waveDrift 26s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes waveDrift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-3.5%); }
+}
+
+.chaos-cables {
+  position: absolute;
+  inset: -4%;
+  pointer-events: none;
+  animation: cableSway 11s ease-in-out infinite;
+  transform-origin: 50% 40%;
+}
+
+.cables-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes cableSway {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(0.5deg) translateY(-8px); }
+}
+
+.kbd-wrap {
+  width: clamp(300px, 34vw, 560px);
+  transform: rotate(14deg);
+  opacity: 0.95;
+}
+
+.kbd-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.7));
+}
+
+/* recursion CRT */
+.crt {
+  width: 100%;
+  background: linear-gradient(160deg, #15151f, #0c0c14);
+  border: 1px solid #2a2a3c;
+  padding: 8px 8px 4px;
+  box-shadow: 0 0 44px rgba(0, 255, 225, 0.12), 0 24px 50px rgba(0, 0, 0, 0.65);
+  transform: rotate(3deg);
+}
+
+.crt-screen {
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 255, 225, 0.03) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at 50% 40%, #10101c, #08080f);
+  border: 1px solid rgba(0, 255, 225, 0.35);
+  padding: 10px;
+  min-height: 120px;
+  animation: crtFlicker 6s steps(1) infinite;
+}
+
+@keyframes crtFlicker {
+  0%, 92%, 100% { filter: brightness(1); }
+  93% { filter: brightness(1.35); }
+  94% { filter: brightness(0.85); }
+  95% { filter: brightness(1.1); }
+}
+
+.crt-ui {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+}
+
+.crt-bar {
+  display: block;
+  height: 4px;
+  background: rgba(0, 255, 225, 0.5);
+}
+
+.crt.nested {
+  transform: rotate(-2deg);
+  margin-top: 6px;
+  padding: 5px 5px 2px;
+  box-shadow: 0 0 20px rgba(180, 0, 255, 0.15);
+}
+
+.crt.nested .crt-screen {
+  min-height: 64px;
+  border-color: rgba(180, 0, 255, 0.4);
+  animation: none;
+}
+
+.crt.nested.tiny {
+  transform: rotate(1.5deg);
+  width: 60%;
+  align-self: flex-end;
+}
+
+.crt.nested.tiny .crt-screen {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crt-cursor {
+  width: 7px;
+  height: 11px;
+  background: #00ffe1;
+  animation: blinkCur 1.1s steps(1) infinite;
+}
+
+@keyframes blinkCur {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.crt-base {
+  height: 8px;
+  margin-top: 4px;
+  background: #101018;
+  border-top: 1px solid #232330;
+}
+
+/* warm survivors */
+.warm-lamp {
+  width: 10px;
+  height: 14px;
+  background: #e8a84a;
+  box-shadow:
+    0 0 18px 6px rgba(232, 168, 74, 0.55),
+    0 0 60px 20px rgba(232, 168, 74, 0.2);
+  animation: lampFlicker 7s ease-in-out infinite;
+}
+
+/* ---------- Chaotic Digital Music Player ---------- */
+.chaotic-player-rig {
+  position: relative;
+  filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.9));
+  transform-style: preserve-3d;
+}
+
+.chaotic-album-shard {
+  position: relative;
+  border: 1px solid rgba(0, 255, 225, 0.35);
+  background: #080812;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0, 255, 225, 0.15);
+}
+
+.chaotic-glitch-bar {
+  animation: glitchJitter 3.5s steps(2) infinite;
+}
+
+@keyframes glitchJitter {
+  0%, 100% { transform: translateY(0) skewX(0deg); }
+  30% { transform: translateY(-2px) skewX(4deg); }
+  60% { transform: translateY(2px) skewX(-3deg); }
+  85% { transform: translateY(-1px) skewX(6deg); }
+}
+
+/* ---------- Work as physical artifacts ---------- */
+.work-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: fit-content;
+  animation: marqueeScroll 32s linear infinite;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.artifact-monitor {
+  position: relative;
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.75));
+}
+
+.artifact-bezel {
+  background: linear-gradient(165deg, #191924, #0b0b13 70%);
+  border: 1px solid #2b2b3e;
+  padding: clamp(12px, 2vw, 22px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 70px rgba(0, 255, 225, 0.07);
+}
+
+.artifact-screen {
+  position: relative;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 255, 225, 0.025) 0 2px, transparent 2px 5px),
+    radial-gradient(ellipse at 40% 30%, #12121f, #090911 75%);
+  border: 1px solid rgba(0, 255, 225, 0.22);
+  padding: clamp(1.4rem, 3.4vw, 2.6rem);
+  min-height: 300px;
+  overflow: hidden;
+}
+
+.artifact-screen.dim {
+  min-height: 170px;
+  border-color: rgba(0, 255, 225, 0.16);
+}
+
+.artifact-screen.dead {
+  min-height: 130px;
+  background: #07070d;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.artifact-monitor.small .artifact-bezel {
+  box-shadow: 0 0 44px rgba(180, 0, 255, 0.07);
+}
+
+.artifact-monitor.off {
+  opacity: 0.75;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.8)) brightness(0.8);
+}
+
+.artifact-stand {
+  width: 26%;
+  height: 16px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #14141e, #0a0a11);
+  border: 1px solid #232330;
+  border-top: none;
+}
+
+.artifact-stand.short {
+  height: 10px;
+  width: 34%;
+}
+
+.artifact-inner-screen {
+  position: absolute;
+  right: clamp(0.8rem, 2.4vw, 2rem);
+  bottom: clamp(0.8rem, 2.4vw, 2rem);
+  width: clamp(120px, 18vw, 190px);
+  height: clamp(80px, 12vw, 126px);
+  border: 1px solid rgba(0, 255, 225, 0.3);
+  background: #0a0a13;
+  box-shadow: 0 0 30px rgba(0, 255, 225, 0.1);
+  overflow: hidden;
+}
+
+.artifact-inner-room {
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/room.png");
+  background-size: cover;
+  background-position: 30% 60%;
+  opacity: 0.85;
+  filter: saturate(1.1);
+}
+
+.artifact-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -30%;
+  height: 26%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 225, 0.06), transparent);
+  animation: scanPass 4.2s linear infinite;
+}
+
+@keyframes scanPass {
+  from { top: -30%; }
+  to { top: 110%; }
+}
+
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 64%;
+  height: 100%;
+  background: #00ffe1;
+  box-shadow: 0 0 10px #00ffe1;
+}
+
+.blink-cursor {
+  animation: blinkCur 1.1s steps(1) infinite;
+}
+
+@media (max-width: 768px) {
+  .kbd-wrap { width: 300px; right: -18% !important; }
+  .chaos-fore { transform: scale(1.5) rotate(-2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-ribbon-svg,
+  .chaos-cables,
+  .crt-screen,
+  .warm-lamp,
+  .artifact-scan,
+  .marquee-track {
+    animation: none !important;
+  }
+}
