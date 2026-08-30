@@ -22,8 +22,14 @@ export const ReturnPortal: React.FC<ReturnPortalProps> = ({ onReturnHome, isRetu
   };
 
   return (
-    <div className="relative z-20 py-24 px-6 sm:px-14 flex flex-col items-center text-center bg-transparent">
-
+    <div
+      className="relative z-20 py-24 px-6 sm:px-14 flex flex-col items-center text-center"
+      style={{
+        background: 'linear-gradient(to bottom, rgba(10,10,18,0.7) 0%, rgba(10,10,18,0.97) 15%, #0a0a12 35%)',
+        backdropFilter: 'blur(2px)',
+        WebkitBackdropFilter: 'blur(2px)',
+      }}
+    >
       {/* Return Home button — minimal text only */}
       <button
         onClick={onReturnHome}

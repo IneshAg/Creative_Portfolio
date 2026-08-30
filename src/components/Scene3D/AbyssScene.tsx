@@ -72,7 +72,7 @@ const BrainWaveRibbons = () => {
           <lineBasicMaterial
             color={ribbon.color}
             transparent
-            opacity={0.55}
+            opacity={0.28}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
@@ -117,7 +117,7 @@ const ChromaticVortex = () => {
           <meshBasicMaterial
             color={ring.color}
             transparent
-            opacity={0.12 + ring.t * 0.18}
+            opacity={0.06 + ring.t * 0.10}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
@@ -195,10 +195,10 @@ const PsychedelicCloud = () => {
   return (
     <points ref={meshRef} geometry={geometry}>
       <pointsMaterial
-        size={0.22}
+        size={0.16}
         vertexColors
         transparent
-        opacity={0.75}
+        opacity={0.45}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
         sizeAttenuation
@@ -249,7 +249,7 @@ const NeuralSynapses = () => {
     const t = clock.getElapsedTime();
     // Pulse opacity to simulate synaptic firing
     const mat = linesRef.current.material as THREE.LineBasicMaterial;
-    mat.opacity = 0.08 + Math.abs(Math.sin(t * 1.5)) * 0.25;
+    mat.opacity = 0.04 + Math.abs(Math.sin(t * 1.5)) * 0.12;
   });
 
   return (
