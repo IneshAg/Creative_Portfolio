@@ -141,15 +141,28 @@ export const RoomPlane: React.FC<RoomPlaneProps> = ({ isPlaying }) => {
   const videoTexture = useMemo(() => {
     const video = document.createElement('video');
     video.src = '/assets/vinyl_record.mp4';
+    video.crossOrigin = 'Anonymous'; // CRITICAL FOR DEPLOYED WEBGL TEXTURES
     video.loop = true;
     video.muted = true;
     video.playsInline = true;
-    return new THREE.VideoTexture(video);
+    video.preload = 'auto';
+    video.load();
+    
+    // Force first frame decode for browsers that hold off on rendering
+    video.addEventListener('loadeddata', () => {
+      video.currentTime = 0.1;
+    }, { once: true });
+
+    const tex = new THREE.VideoTexture(video);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.format = THREE.RGBAFormat;
+    return tex;
   }, []);
 
   React.useEffect(() => {
     if (isPlaying) {
-      videoTexture.image.play().catch(() => {});
+      videoTexture.image.play().catch((e) => console.error('Video play error:', e));
     } else {
       videoTexture.image.pause();
     }
