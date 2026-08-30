@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { audioManager } from '../../audio/AudioManager';
 import { ProjectArtifactViewer } from './ProjectArtifactViewer';
 
@@ -178,16 +179,23 @@ const FloatingKeyboard = () => {
   }, []);
 
   const keys = useMemo(() => [10, 10, 9, 8, 5], []);
-  const totalKeys = 42; // Sum of rows
+  const rowOffsets = useMemo(() => [0, 10, 20, 29, 37], []);
+  const totalKeys = 42;
 
   useEffect(() => {
+    const getIndex = (code: string) => {
+      let hash = 0;
+      for (let i = 0; i < code.length; i++) hash += code.charCodeAt(i);
+      return hash % totalKeys;
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.repeat) return; // Prevent continuous firing
-      const idx = e.key.charCodeAt(0) % totalKeys;
+      if (e.repeat) return;
+      const idx = getIndex(e.code);
       setActiveKeys(prev => new Set(prev).add(idx));
     };
     const handleKeyUp = (e: KeyboardEvent) => {
-      const idx = e.key.charCodeAt(0) % totalKeys;
+      const idx = getIndex(e.code);
       setActiveKeys(prev => {
         const next = new Set(prev);
         next.delete(idx);
@@ -203,8 +211,6 @@ const FloatingKeyboard = () => {
     };
   }, [totalKeys]);
 
-  let keyIndexCounter = 0;
-
   return (
     <div style={{ position: 'absolute', right: 'clamp(2%, 4vw, 7%)', top: '48vh', zIndex: 6, opacity: 0.9 }}>
       <div ref={ref} style={{ transformOrigin: 'center center', willChange: 'transform' }}>
@@ -212,7 +218,7 @@ const FloatingKeyboard = () => {
           {keys.map((count, row) => (
             <div key={row} style={{ display: 'flex', gap: '4px', justifyContent: row === keys.length - 1 ? 'center' : 'flex-start' }}>
               {Array.from({ length: count }, (_, k) => {
-                const currentIdx = keyIndexCounter++;
+                const currentIdx = rowOffsets[row] + k;
                 const isActive = activeKeys.has(currentIdx);
                 
                 return (
@@ -294,12 +300,18 @@ const ProjectScreen: React.FC<ProjectScreenProps> = ({
   const h = { desktop: 'clamp(110px,16vh,190px)', laptop: 'clamp(90px,13vh,160px)', phone: 'clamp(160px,22vh,240px)' }[form];
 
   return (
-    <div style={{ zIndex: 8, cursor: 'pointer', ...style }}>
+    <motion.div
+      drag
+      dragElastic={0.1}
+      dragMomentum={false}
+      whileDrag={{ zIndex: 50, scale: 1.05, cursor: 'grabbing' }}
+      onClick={onClick}
+      style={{ zIndex: 8, cursor: 'grab', position: 'absolute', ...style }}
+    >
       <div
         ref={ref}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={onClick}
         style={{ width: w, transformOrigin: 'center center', transition: hovered ? 'transform 0.5s cubic-bezier(0.22,1,0.36,1)' : 'none', willChange: 'transform' }}
       >
         {/* Monitor body */}
@@ -366,7 +378,7 @@ const ProjectScreen: React.FC<ProjectScreenProps> = ({
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
