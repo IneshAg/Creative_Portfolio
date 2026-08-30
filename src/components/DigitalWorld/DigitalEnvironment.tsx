@@ -161,7 +161,6 @@ const GiantMonitorForeground = () => {
 // ─────────────────────────────────────────────────────────────────────────────
 const FloatingKeyboard = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const [activeKeys, setActiveKeys] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let id: number, s = 0;
@@ -183,7 +182,19 @@ const FloatingKeyboard = () => {
   const totalKeys = 42;
 
   useEffect(() => {
+    // Map common keys to visual grid roughly like a real keyboard
+    const codeMap = [
+      'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0',
+      'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP',
+      'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL',
+      'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Backspace',
+      'ShiftLeft', 'Space', 'Enter', 'ShiftRight', 'Tab'
+    ];
+
     const getIndex = (code: string) => {
+      const idx = codeMap.indexOf(code);
+      if (idx !== -1) return idx;
+      // fallback
       let hash = 0;
       for (let i = 0; i < code.length; i++) hash += code.charCodeAt(i);
       return hash % totalKeys;
@@ -192,15 +203,22 @@ const FloatingKeyboard = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
       const idx = getIndex(e.code);
-      setActiveKeys(prev => new Set(prev).add(idx));
+      const el = document.getElementById(`kbd-key-${idx}`);
+      if (el) {
+        el.style.background = '#fff';
+        el.style.boxShadow = '0 0 15px rgba(255,255,255,0.9), 0 0 30px rgba(0,255,225,0.8)';
+        el.style.transform = 'translateY(2px)';
+      }
     };
+
     const handleKeyUp = (e: KeyboardEvent) => {
       const idx = getIndex(e.code);
-      setActiveKeys(prev => {
-        const next = new Set(prev);
-        next.delete(idx);
-        return next;
-      });
+      const el = document.getElementById(`kbd-key-${idx}`);
+      if (el) {
+        el.style.background = el.dataset.origBg || '';
+        el.style.boxShadow = el.dataset.origShadow || '';
+        el.style.transform = 'translateY(0)';
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -219,19 +237,26 @@ const FloatingKeyboard = () => {
             <div key={row} style={{ display: 'flex', gap: '4px', justifyContent: row === keys.length - 1 ? 'center' : 'flex-start' }}>
               {Array.from({ length: count }, (_, k) => {
                 const currentIdx = rowOffsets[row] + k;
-                const isActive = activeKeys.has(currentIdx);
+                const origBg = Math.random() > 0.8 ? 'rgba(0,255,225,0.35)' : 'rgba(255,255,255,0.12)';
+                const origShadow = Math.random() > 0.8 ? '0 0 8px rgba(0,255,225,0.4)' : 'inset 0 1px 2px rgba(255,255,255,0.05)';
                 
                 return (
-                  <div key={k} style={{
-                    flex: row === keys.length - 1 && k === 2 ? 3 : 1,
-                    height: 'clamp(10px,1.4vw,18px)',
-                    background: isActive ? '#fff' : (Math.random() > 0.8 ? 'rgba(0,255,225,0.35)' : 'rgba(255,255,255,0.12)'),
-                    borderRadius: '2px',
-                    border: isActive ? '1px solid #fff' : '1px solid rgba(255,255,255,0.10)',
-                    boxShadow: isActive ? '0 0 15px rgba(255,255,255,0.9), 0 0 30px rgba(0,255,225,0.8)' : (Math.random() > 0.8 ? '0 0 8px rgba(0,255,225,0.4)' : 'inset 0 1px 2px rgba(255,255,255,0.05)'),
-                    transform: isActive ? 'translateY(2px)' : 'translateY(0)',
-                    transition: isActive ? 'none' : 'transform 0.1s, background 0.2s, box-shadow 0.2s',
-                  }} />
+                  <div 
+                    key={k} 
+                    id={`kbd-key-${currentIdx}`}
+                    data-orig-bg={origBg}
+                    data-orig-shadow={origShadow}
+                    style={{
+                      flex: row === keys.length - 1 && k === 2 ? 3 : 1,
+                      height: 'clamp(10px,1.4vw,18px)',
+                      background: origBg,
+                      borderRadius: '2px',
+                      border: '1px solid rgba(255,255,255,0.10)',
+                      boxShadow: origShadow,
+                      transform: 'translateY(0)',
+                      transition: 'transform 0.1s, background 0.2s, box-shadow 0.2s',
+                    }} 
+                  />
                 );
               })}
             </div>
