@@ -583,28 +583,28 @@ const CentralVoid = () => {
 // ─────────────────────────────────────────────────────────────────────────────
 // 8. HARDWARE DEBRIS FIELD — Massive chaos of disconnected screens, keyboards, and CRTs
 // ─────────────────────────────────────────────────────────────────────────────
-const HardwareDebrisField = () => {
+export const HardwareDebrisField = ({ count = 45, heightSpread = 120, startY = -10, zIndex = 2 }) => {
   const debris = useMemo(() => {
-    return Array.from({ length: 45 }, (_, i) => { // Increased from 18 to 45
+    return Array.from({ length: count }, (_, i) => {
       const type = Math.random();
       const hardware = type > 0.55 ? 'screen' : type > 0.25 ? 'crt' : 'keyboard';
       return {
         id: i,
         type: hardware,
         left: `${-5 + Math.random() * 110}%`,
-        top: `${-10 + Math.random() * 120}vh`,
-        size: 0.5 + Math.random() * 1.2, // Increased size significantly
+        top: `${startY + Math.random() * heightSpread}vh`,
+        size: 0.5 + Math.random() * 1.5,
         rx: Math.random() * 360,
         ry: Math.random() * 360,
         rz: Math.random() * 360,
-        speedX: (Math.random() - 0.5) * 0.15,
-        speedY: (Math.random() - 0.5) * 0.15,
-        speedZ: (Math.random() - 0.5) * 0.15,
+        speedX: (Math.random() - 0.5) * 0.2,
+        speedY: (Math.random() - 0.5) * 0.2,
+        speedZ: (Math.random() - 0.5) * 0.2,
         color: Math.random() > 0.5 ? '#00ffe1' : Math.random() > 0.5 ? '#b400ff' : '#e8a84a',
-        opacity: 0.25 + Math.random() * 0.5, // Massively increased opacity (was 0.05-0.2)
+        opacity: 0.3 + Math.random() * 0.6,
       };
     });
-  }, []);
+  }, [count, heightSpread, startY]);
 
   const [t, setT] = useState(0);
   useEffect(() => {
@@ -622,7 +622,7 @@ const HardwareDebrisField = () => {
         return (
           <div key={d.id} style={{
             position: 'absolute', left: d.left, top: d.top,
-            perspective: '800px', zIndex: 2, pointerEvents: 'none',
+            perspective: '800px', zIndex: zIndex, pointerEvents: 'none',
             transform: `scale(${d.size}) translateY(${Math.sin(t * 0.5 + d.id) * 30}px)`,
             opacity: d.opacity,
           }}>
@@ -725,9 +725,6 @@ export const DigitalEnvironment: React.FC = () => {
 
       {/* Particles flowing toward the void */}
       <ParticleFlow />
-
-      {/* Hardware debris field — chaos of floating monitors and keyboards */}
-      <HardwareDebrisField />
 
       {/* Room remnants — amber, vinyl */}
       <RoomRemnants />

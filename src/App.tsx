@@ -6,7 +6,7 @@ import { SvgDefs } from './components/SvgDefs';
 import { RoomScene } from './components/RoomWorld/RoomScene';
 import { WorldTransition } from './components/CorruptionTransition/WorldTransition';
 import { DigitalWorld } from './components/DigitalWorld/DigitalWorld';
-import { DigitalEnvironment } from './components/DigitalWorld/DigitalEnvironment';
+import { DigitalEnvironment, HardwareDebrisField } from './components/DigitalWorld/DigitalEnvironment';
 import { ReturnPortal } from './components/ReturnWorld/ReturnPortal';
 import { Navigation } from './components/Navigation';
 import { audioManager } from './audio/AudioManager';
@@ -156,6 +156,13 @@ export function App() {
             onTogglePlay={handleToggleAudio}
           />
         </div>
+      </div>
+
+      {/* ============================================================
+          GLOBAL CHAOS: HARDWARE DEBRIS SPANNING ENTIRE PAGE
+          ============================================================ */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none', zIndex: 25 }}>
+        <HardwareDebrisField count={70} heightSpread={580} startY={80} zIndex={25} />
       </div>
 
       {/* ============================================================
