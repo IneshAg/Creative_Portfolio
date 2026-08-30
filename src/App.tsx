@@ -12,6 +12,7 @@ import { Navigation } from './components/Navigation';
 import { audioManager } from './audio/AudioManager';
 import { BackgroundCanvas } from './components/Scene3D/BackgroundCanvas';
 import { scrollState } from './store/scrollStore';
+import { ChapterMarker } from './components/ChapterMarker';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -172,6 +173,8 @@ export function App() {
         <DigitalEnvironment />
         <ReturnPortal onReturnHome={handleReturnHome} isReturning={isReturning} />
       </main>
+
+      <ChapterMarker progress={domProgress} />
 
       {isReturning && (
         <div className="return-veil opacity-100 transition-opacity duration-1000 z-50 pointer-events-none" />
