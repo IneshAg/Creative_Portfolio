@@ -162,8 +162,11 @@ export function App() {
       {/* ============================================================
           GLOBAL CHAOS: HARDWARE DEBRIS SPANNING ENTIRE PAGE
           ============================================================ */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none', zIndex: 25 }}>
-        <HardwareDebrisField count={70} heightSpread={580} startY={80} zIndex={25} />
+      <div style={{ 
+        position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none', zIndex: 25,
+        opacity: Math.max(0, Math.min(1, (domProgress - 0.25) * 4))
+      }}>
+        <HardwareDebrisField count={70} heightSpread={580} startY={150} zIndex={25} />
       </div>
 
       {/* ============================================================
