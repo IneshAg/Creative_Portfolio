@@ -156,10 +156,12 @@ const GiantMonitorForeground = () => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. FLOATING KEYBOARD — suspended at an impossible angle
+// 3. FLOATING KEYBOARD — suspended at an impossible angle (INTERACTIVE)
 // ─────────────────────────────────────────────────────────────────────────────
 const FloatingKeyboard = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const [activeKeys, setActiveKeys] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     let id: number, s = 0;
     const loop = () => {
@@ -175,31 +177,64 @@ const FloatingKeyboard = () => {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const keys = useMemo(() => {
-    const rows = [10, 10, 9, 8, 5];
-    return rows;
-  }, []);
+  const keys = useMemo(() => [10, 10, 9, 8, 5], []);
+  const totalKeys = 42; // Sum of rows
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return; // Prevent continuous firing
+      const idx = e.key.charCodeAt(0) % totalKeys;
+      setActiveKeys(prev => new Set(prev).add(idx));
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const idx = e.key.charCodeAt(0) % totalKeys;
+      setActiveKeys(prev => {
+        const next = new Set(prev);
+        next.delete(idx);
+        return next;
+      });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [totalKeys]);
+
+  let keyIndexCounter = 0;
 
   return (
-    <div style={{ position: 'absolute', right: 'clamp(2%, 4vw, 7%)', top: '48vh', zIndex: 6, pointerEvents: 'none', opacity: 0.85 }}>
+    <div style={{ position: 'absolute', right: 'clamp(2%, 4vw, 7%)', top: '48vh', zIndex: 6, opacity: 0.9 }}>
       <div ref={ref} style={{ transformOrigin: 'center center', willChange: 'transform' }}>
         <div style={{ background: '#0a0a14', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: '5px', width: 'clamp(140px,18vw,240px)', boxShadow: '0 20px 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,255,225,0.05)' }}>
           {keys.map((count, row) => (
             <div key={row} style={{ display: 'flex', gap: '4px', justifyContent: row === keys.length - 1 ? 'center' : 'flex-start' }}>
-              {Array.from({ length: count }, (_, k) => (
-                <div key={k} style={{
-                  flex: row === keys.length - 1 && k === 2 ? 3 : 1,
-                  height: 'clamp(10px,1.4vw,18px)',
-                  background: Math.random() > 0.8 ? 'rgba(0,255,225,0.35)' : 'rgba(255,255,255,0.12)',
-                  borderRadius: '2px',
-                  border: '1px solid rgba(255,255,255,0.10)',
-                  boxShadow: Math.random() > 0.8 ? '0 0 8px rgba(0,255,225,0.4)' : 'inset 0 1px 2px rgba(255,255,255,0.05)',
-                }} />
-              ))}
+              {Array.from({ length: count }, (_, k) => {
+                const currentIdx = keyIndexCounter++;
+                const isActive = activeKeys.has(currentIdx);
+                
+                return (
+                  <div key={k} style={{
+                    flex: row === keys.length - 1 && k === 2 ? 3 : 1,
+                    height: 'clamp(10px,1.4vw,18px)',
+                    background: isActive ? '#fff' : (Math.random() > 0.8 ? 'rgba(0,255,225,0.35)' : 'rgba(255,255,255,0.12)'),
+                    borderRadius: '2px',
+                    border: isActive ? '1px solid #fff' : '1px solid rgba(255,255,255,0.10)',
+                    boxShadow: isActive ? '0 0 15px rgba(255,255,255,0.9), 0 0 30px rgba(0,255,225,0.8)' : (Math.random() > 0.8 ? '0 0 8px rgba(0,255,225,0.4)' : 'inset 0 1px 2px rgba(255,255,255,0.05)'),
+                    transform: isActive ? 'translateY(2px)' : 'translateY(0)',
+                    transition: isActive ? 'none' : 'transform 0.1s, background 0.2s, box-shadow 0.2s',
+                  }} />
+                );
+              })}
             </div>
           ))}
         </div>
       </div>
+      <p style={{ position: 'absolute', bottom: '-20px', right: 0, fontFamily: 'monospace', fontSize: '6px', letterSpacing: '0.2em', color: 'rgba(0,255,225,0.4)', pointerEvents: 'none' }}>
+        // TYPE ON YOUR KEYBOARD
+      </p>
     </div>
   );
 };
@@ -509,40 +544,88 @@ const CentralVoid = () => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. BACKGROUND: RECURSIVE / DISTANT SCREENS
-// Tiny, distant, partial — gives a sense of deep space
+// 8. HARDWARE DEBRIS FIELD — Massive chaos of disconnected screens, keyboards, and CRTs
 // ─────────────────────────────────────────────────────────────────────────────
-const DistantScreens = () => {
-  const screens = [
-    { left: '55%', top: '15vh', w: '90px', h: '55px', tilt: 'rotateY(-20deg) rotateX(8deg)', opacity: 0.15, color: '#00ffe1' },
-    { left: '72%', top: '35vh', w: '60px', h: '38px', tilt: 'rotateY(25deg) rotateX(-5deg)', opacity: 0.10, color: '#b400ff' },
-    { left: '15%', top: '20vh', w: '70px', h: '44px', tilt: 'rotateY(-15deg) rotateX(10deg)', opacity: 0.12, color: '#e8a84a' },
-    { left: '80%', top: '60vh', w: '50px', h: '32px', tilt: 'rotateY(30deg) rotateX(-8deg)', opacity: 0.08, color: '#00ffe1' },
-    { left: '28%', top: '78vh', w: '80px', h: '50px', tilt: 'rotateY(-18deg) rotateX(6deg)', opacity: 0.10, color: '#b400ff' },
-  ];
+const HardwareDebrisField = () => {
+  const debris = useMemo(() => {
+    return Array.from({ length: 18 }, (_, i) => {
+      const type = Math.random();
+      const hardware = type > 0.6 ? 'screen' : type > 0.3 ? 'crt' : 'keyboard';
+      return {
+        id: i,
+        type: hardware,
+        left: `${5 + Math.random() * 85}%`,
+        top: `${5 + Math.random() * 90}vh`,
+        size: 0.3 + Math.random() * 0.7,
+        rx: Math.random() * 360,
+        ry: Math.random() * 360,
+        rz: Math.random() * 360,
+        speedX: (Math.random() - 0.5) * 0.1,
+        speedY: (Math.random() - 0.5) * 0.1,
+        speedZ: (Math.random() - 0.5) * 0.1,
+        color: Math.random() > 0.5 ? '#00ffe1' : Math.random() > 0.5 ? '#b400ff' : '#e8a84a',
+        opacity: 0.05 + Math.random() * 0.15,
+      };
+    });
+  }, []);
+
+  const [t, setT] = useState(0);
+  useEffect(() => {
+    let id: number;
+    const loop = () => { setT(Date.now() * 0.001); id = requestAnimationFrame(loop); };
+    loop();
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   return (
     <>
-      {screens.map((s, i) => (
-        <div key={i} style={{
-          position: 'absolute', left: s.left, top: s.top,
-          perspective: '500px', zIndex: 2, pointerEvents: 'none',
-        }}>
-          <div style={{
-            width: s.w, height: s.h,
-            background: '#050510',
-            border: `1px solid ${s.color}20`,
-            transform: s.tilt,
-            opacity: s.opacity,
-            boxShadow: `0 0 20px ${s.color}08`,
-            borderRadius: '2px',
-            overflow: 'hidden',
+      {debris.map(d => {
+        const tilt = `rotateX(${d.rx + t * d.speedX * 50}deg) rotateY(${d.ry + t * d.speedY * 50}deg) rotateZ(${d.rz + t * d.speedZ * 50}deg)`;
+        
+        return (
+          <div key={d.id} style={{
+            position: 'absolute', left: d.left, top: d.top,
+            perspective: '800px', zIndex: 2, pointerEvents: 'none',
+            transform: `scale(${d.size}) translateY(${Math.sin(t * 0.5 + d.id) * 20}px)`,
+            opacity: d.opacity,
           }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 6px)' }} />
-            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 40% 40%, ${s.color}10 0%, transparent 70%)` }} />
+            {d.type === 'screen' && (
+              <div style={{
+                width: '120px', height: '80px', background: '#050510',
+                border: `2px solid ${d.color}30`, transform: tilt,
+                boxShadow: `0 0 30px ${d.color}15`, borderRadius: '3px', overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.2) 3px, rgba(0,0,0,0.2) 6px)' }} />
+                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at center, ${d.color}15 0%, transparent 80%)` }} />
+              </div>
+            )}
+            
+            {d.type === 'crt' && (
+              <div style={{
+                width: '100px', height: '90px', background: '#020205',
+                border: `3px solid rgba(255,255,255,0.05)`, transform: tilt,
+                boxShadow: `inset 0 0 20px #000, 0 0 40px rgba(0,0,0,0.9)`, borderRadius: '10px'
+              }}>
+                <div style={{ position: 'absolute', top: '10%', left: '10%', width: '80%', height: '80%', background: '#080812', borderRadius: '20px' }}>
+                  <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)` }} />
+                </div>
+              </div>
+            )}
+            
+            {d.type === 'keyboard' && (
+              <div style={{
+                width: '140px', height: '60px', background: '#050508',
+                border: `1px solid rgba(255,255,255,0.1)`, transform: tilt,
+                display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2px', padding: '4px'
+              }}>
+                {Array.from({length: 36}).map((_, i) => (
+                  <div key={i} style={{ background: `rgba(255,255,255,${0.05 + Math.random() * 0.1})`, borderRadius: '1px' }} />
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 };
@@ -603,8 +686,8 @@ export const DigitalEnvironment: React.FC = () => {
       {/* Particles flowing toward the void */}
       <ParticleFlow />
 
-      {/* Distant / background screens */}
-      <DistantScreens />
+      {/* Hardware debris field — chaos of floating monitors and keyboards */}
+      <HardwareDebrisField />
 
       {/* Room remnants — amber, vinyl */}
       <RoomRemnants />
