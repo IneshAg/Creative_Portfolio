@@ -1,8 +1,138 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
 import { ProjectArtifactViewer } from "./ProjectArtifactViewer";
 
-const MARQUEE = "UI / UX / INTERACTION — STORY — MOTION — SPACE — SYSTEMS — EXPERIMENT — ";
+
+
+// Projects in display order — TEAM SECTION first (was 3), EVENT DISCOVERY second (was 2), THIS WEBSITE last
+const PROJECTS = [
+  {
+    id: '3',
+    num: '01',
+    title: 'TEAM SECTION',
+    sub: 'UI / Visual Design',
+    tag: 'LIVE — FIGMA',
+    color: '#b400ff',
+  },
+  {
+    id: '2',
+    num: '02',
+    title: 'EVENT DISCOVERY',
+    sub: 'UX Research / Wireframes',
+    tag: 'CASE STUDY',
+    color: '#00ffe1',
+  },
+  {
+    id: '1',
+    num: '03',
+    title: 'THIS WEBSITE',
+    sub: 'UI / UX / Interaction',
+    tag: 'YOU ARE INSIDE IT',
+    color: '#e8a84a',
+  },
+];
+
+const ProjectCard = ({
+  project,
+  index,
+  total,
+  onClick,
+}: {
+  project: typeof PROJECTS[0];
+  index: number;
+  total: number;
+  onClick: () => void;
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [scrollRatio, setScrollRatio] = useState(0);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const winH = window.innerHeight;
+      // 0 = card just entering from bottom, 1 = card at top
+      const ratio = 1 - Math.max(0, Math.min(1, rect.top / winH));
+      setScrollRatio(ratio);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Stacking: each card sits at a slightly higher position
+  // as it scrolls into view it rises forward (scale up, translateY up)
+  // the previous one scales slightly down and recedes
+  const stackOffset = index * 10; // pixels pushed down from top when stacked
+  const translateY = -Math.min(stackOffset, scrollRatio * stackOffset * 1.4);
+  const scale = 0.92 + index * 0.026 + scrollRatio * 0.04;
+
+  return (
+    <div
+      ref={cardRef}
+      style={{
+        position: 'sticky',
+        top: `${60 + index * 28}px`,
+        zIndex: 10 + index,
+        transform: `translateY(${translateY}px) scale(${Math.min(scale, 1)})`,
+        transformOrigin: 'center top',
+        transition: 'transform 0.12s linear',
+        marginBottom: index < total - 1 ? '0' : '0',
+      }}
+    >
+      <div
+        onClick={onClick}
+        className="group cursor-pointer w-full max-w-3xl mx-auto bg-[#0d0d1a]/95 backdrop-blur-sm border border-white/8 rounded-2xl overflow-hidden"
+        style={{
+          boxShadow: `0 0 0 1px ${project.color}15, 0 30px 80px rgba(0,0,0,0.7)`,
+        }}
+      >
+        {/* Top accent line */}
+        <div className="h-[1px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${project.color}, transparent)` }} />
+
+        <div className="p-8 sm:p-10">
+          {/* Header row */}
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <span
+                className="font-mono text-[10px] tracking-[0.4em] font-bold"
+                style={{ color: project.color }}
+              >
+                {project.num}
+              </span>
+              <span
+                className="font-mono text-[9px] tracking-[0.3em] px-2.5 py-0.5 rounded border"
+                style={{ color: project.color, borderColor: `${project.color}40`, background: `${project.color}10` }}
+              >
+                {project.tag}
+              </span>
+            </div>
+            <span className="font-mono text-[9px] tracking-widest text-stone-600 group-hover:text-stone-400 transition-colors">
+              CLICK TO INSPECT →
+            </span>
+          </div>
+
+          {/* Title */}
+          <h3
+            className="font-grotesk font-bold text-3xl sm:text-4xl text-white tracking-tight mb-3 group-hover:text-opacity-90 transition-all"
+          >
+            {project.title}
+          </h3>
+
+          {/* Sub-label */}
+          <p className="font-mono text-[11px] tracking-[0.3em] text-stone-500 uppercase">
+            {project.sub}
+          </p>
+        </div>
+
+        {/* Bottom accent line */}
+        <div className="h-[1px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${project.color}50, transparent)` }} />
+      </div>
+    </div>
+  );
+};
 
 export const WorkSection: React.FC = () => {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
@@ -12,202 +142,85 @@ export const WorkSection: React.FC = () => {
       className="work-shell"
       data-testid="work-section"
       style={{
-        minHeight: "190vh",
+        minHeight: "240vh",
         background: "transparent",
-        padding: "16vh clamp(1.25rem,6vw,5rem) 12vh",
+        padding: "16vh clamp(1.25rem,6vw,5rem) 20vh",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* a cable crossing the section */}
-      <svg
-        aria-hidden="true"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
-        viewBox="0 0 1600 1800"
-        preserveAspectRatio="none"
-      >
-        <path d="M -60 300 C 400 120, 900 560, 1660 380" fill="none" stroke="#101018" strokeWidth="30" strokeLinecap="round" />
-        <path d="M -60 300 C 400 120, 900 560, 1660 380" fill="none" stroke="rgba(0,255,225,0.16)" strokeWidth="3" />
-        <path d="M 1400 -40 C 1200 500, 1500 1100, 1150 1840" fill="none" stroke="#0d0d15" strokeWidth="22" strokeLinecap="round" />
-      </svg>
-
-      {/* editorial marquee */}
-      <div
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          borderTop: "1px solid rgba(0,255,225,0.14)",
-          borderBottom: "1px solid rgba(0,255,225,0.14)",
-          padding: "0.9rem 0",
-          marginBottom: "14vh",
-          background: "rgba(10,10,18,0.55)",
-        }}
-        aria-hidden="true"
-      >
-        <div
-          className="marquee-track font-mono-sys"
-          style={{ fontSize: "0.66rem", letterSpacing: "0.4em", color: "rgba(0,255,225,0.4)", whiteSpace: "nowrap" }}
-        >
-          <span style={{ paddingRight: "2rem" }}>{MARQUEE.repeat(3)}</span>
-          <span style={{ paddingRight: "2rem" }}>{MARQUEE.repeat(3)}</span>
-        </div>
-      </div>
-
+      {/* Header */}
       <div
         className="font-mono-sys"
-        style={{ position: "relative", fontSize: "0.6rem", letterSpacing: "0.34em", color: "rgba(0,255,225,0.55)", marginBottom: "7vh" }}
+        style={{
+          position: "relative",
+          fontSize: "0.6rem",
+          letterSpacing: "0.34em",
+          color: "rgba(0,255,225,0.55)",
+          marginBottom: "10vh",
+        }}
         data-testid="work-label"
       >
         SELECTED WORK — ARCHIVE 01
       </div>
 
-      {/* PROJECT_01 — a large monitor, embedded in the environment */}
-      <motion.div
-        initial={{ opacity: 0, y: 80, rotate: -2.5 }}
-        whileInView={{ opacity: 1, y: 0, rotate: -2.5 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        style={{ position: "relative", maxWidth: 920, zIndex: 3 }}
-      >
-        <div
-          className="artifact-monitor cursor-pointer"
-          data-testid="project-this-website"
-          onClick={() => setActiveProjectId('1')}
-          title="Click screen to inspect case study"
+      {/* Section title */}
+      <div style={{ marginBottom: "8vh", position: "relative", zIndex: 2 }}>
+        <h2
+          className="font-grotesk font-bold"
+          style={{
+            fontSize: "clamp(2rem,5vw,3.5rem)",
+            color: "white",
+            letterSpacing: "-0.01em",
+            lineHeight: 1.1,
+          }}
         >
-          <div className="artifact-bezel">
-            <div className="artifact-screen">
-              <div
-                className="font-mono-sys"
-                style={{
-                  fontSize: "0.58rem",
-                  letterSpacing: "0.3em",
-                  color: "rgba(0,255,225,0.7)",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: 8,
-                }}
-              >
-                <span>PROJECT_01</span>
-                <span style={{ color: "rgba(255,255,255,0.4)" }}>STATUS: LIVE — YOU ARE INSIDE IT</span>
-              </div>
-              <h3
-                style={{
-                  marginTop: "1.4rem",
-                  fontSize: "clamp(1.7rem,3.6vw,2.8rem)",
-                  fontWeight: 600,
-                  color: "#fff",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                THIS WEBSITE
-              </h3>
-              <div
-                className="font-mono-sys"
-                style={{ marginTop: 8, fontSize: "0.62rem", letterSpacing: "0.26em", color: "rgba(180,0,255,0.85)" }}
-              >
-                UI / UX / INTERACTION
-              </div>
-              <p
-                style={{
-                  marginTop: "1.3rem",
-                  color: "rgba(255,255,255,0.62)",
-                  fontSize: "0.95rem",
-                  lineHeight: 1.75,
-                  maxWidth: 500,
-                }}
-              >
-                A portfolio designed as an explorable digital world. One continuous
-                environment — a room, a rupture, a universe, and a way back.
-                The website is the first case study.
-              </p>
-              {/* screen-in-screen: the artifact contains the world it describes */}
-              <div className="artifact-inner-screen" aria-hidden="true">
-                <div className="artifact-inner-room" />
-                <span className="crt-cursor" style={{ position: "absolute", right: 10, bottom: 8 }} />
-              </div>
-            </div>
-          </div>
-          <div className="artifact-stand" />
-        </div>
-      </motion.div>
+          Work
+        </h2>
+      </div>
 
-      {/* PROJECT_02 — a smaller tilted CRT, still being built */}
-      <motion.div
-        initial={{ opacity: 0, y: 60, rotate: 4 }}
-        whileInView={{ opacity: 1, y: 0, rotate: 4 }}
-        viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: 1, delay: 0.15 }}
-        style={{ position: "relative", width: "min(400px, 82vw)", marginLeft: "auto", marginTop: "-6vh", zIndex: 4 }}
-      >
-        <div className="artifact-monitor small cursor-pointer hover:scale-[1.02] transition-transform duration-500" data-testid="project-02" onClick={() => setActiveProjectId('2')} title="Click screen to inspect case study">
-          <div className="artifact-bezel">
-            <div className="artifact-screen dim">
-              <div className="font-mono-sys" style={{ fontSize: "0.58rem", letterSpacing: "0.3em", color: "rgba(255,255,255,0.45)" }}>
-                PROJECT_02
-              </div>
+      {/* Stacked project cards */}
+      <div style={{ position: "relative" }}>
+        {PROJECTS.map((project, i) => (
+          <React.Fragment key={project.id}>
+            <ProjectCard
+              project={project}
+              index={i}
+              total={PROJECTS.length}
+              onClick={() => setActiveProjectId(project.id)}
+            />
+            {/* Divider line between cards (not after last) */}
+            {i < PROJECTS.length - 1 && (
               <div
-                className="font-mono-sys"
-                style={{ marginTop: "1rem", fontSize: "0.72rem", letterSpacing: "0.22em", color: "rgba(0,255,225,0.75)" }}
-              >
-                EVENT DISCOVERY
-                <span style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.4)', display: 'block', marginTop: '6px' }}>UX RESEARCH / WIREFRAMES</span>
-              </div>
-              <div className="progress-track" style={{ marginTop: "1.2rem" }}>
-                <div className="progress-fill" />
-              </div>
-              <div className="artifact-scan" aria-hidden="true" />
-            </div>
-          </div>
-          <div className="artifact-stand short" />
-        </div>
-      </motion.div>
-
-      {/* PROJECT_03 — powered off, hanging in the dark */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 1.4 }}
-        style={{ position: "relative", width: "min(320px, 70vw)", marginTop: "10vh", marginLeft: "8%", transform: "rotate(-6deg)", zIndex: 2 }}
-      >
-        <div className="artifact-monitor cursor-pointer hover:scale-[1.02] transition-transform duration-500" data-testid="project-03" onClick={() => setActiveProjectId('3')} title="Click screen to inspect case study">
-          <div className="artifact-bezel">
-            <div className="artifact-screen dim">
-              <div className="font-mono-sys" style={{ fontSize: "0.56rem", letterSpacing: "0.3em", color: "rgba(255,255,255,0.22)" }}>
-                PROJECT_03
-              </div>
-              <div
-                className="font-mono-sys"
-                style={{ marginTop: "0.9rem", fontSize: "0.68rem", letterSpacing: "0.22em", color: "rgba(0,255,225,0.75)" }}
-              >
-                TEAM SECTION
-                <span style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.4)', display: 'block', marginTop: '6px' }}>UI / VISUAL DESIGN</span>
-              </div>
-            </div>
-          </div>
-          <div className="artifact-stand short" />
-        </div>
-      </motion.div>
+                style={{
+                  height: '1px',
+                  background: 'rgba(255,255,255,0.05)',
+                  margin: '0 auto',
+                  maxWidth: '48rem',
+                  position: 'relative',
+                  zIndex: 5,
+                }}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
 
       <p
         className="font-mono-sys"
         style={{
           position: "relative",
-          marginTop: "12vh",
+          marginTop: "14vh",
           fontSize: "0.6rem",
           letterSpacing: "0.28em",
-          color: "rgba(255,255,255,0.3)",
+          color: "rgba(255,255,255,0.2)",
           maxWidth: 420,
           lineHeight: 2,
           zIndex: 3,
         }}
       >
-        THE ARCHIVE IS YOUNG.<br />THE WORKSPACE IS NOT EMPTY —<br />IT IS UNDER CONSTRUCTION.
+        THE ARCHIVE IS YOUNG.<br />MORE WORK IN PROGRESS.
       </p>
 
-      {/* In-World Project Artifact Viewer Modal */}
       <ProjectArtifactViewer
         projectId={activeProjectId}
         onClose={() => setActiveProjectId(null)}
