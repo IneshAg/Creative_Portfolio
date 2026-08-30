@@ -560,23 +560,23 @@ const CentralVoid = () => {
 // ─────────────────────────────────────────────────────────────────────────────
 const HardwareDebrisField = () => {
   const debris = useMemo(() => {
-    return Array.from({ length: 18 }, (_, i) => {
+    return Array.from({ length: 45 }, (_, i) => { // Increased from 18 to 45
       const type = Math.random();
-      const hardware = type > 0.6 ? 'screen' : type > 0.3 ? 'crt' : 'keyboard';
+      const hardware = type > 0.55 ? 'screen' : type > 0.25 ? 'crt' : 'keyboard';
       return {
         id: i,
         type: hardware,
-        left: `${5 + Math.random() * 85}%`,
-        top: `${5 + Math.random() * 90}vh`,
-        size: 0.3 + Math.random() * 0.7,
+        left: `${-5 + Math.random() * 110}%`,
+        top: `${-10 + Math.random() * 120}vh`,
+        size: 0.5 + Math.random() * 1.2, // Increased size significantly
         rx: Math.random() * 360,
         ry: Math.random() * 360,
         rz: Math.random() * 360,
-        speedX: (Math.random() - 0.5) * 0.1,
-        speedY: (Math.random() - 0.5) * 0.1,
-        speedZ: (Math.random() - 0.5) * 0.1,
+        speedX: (Math.random() - 0.5) * 0.15,
+        speedY: (Math.random() - 0.5) * 0.15,
+        speedZ: (Math.random() - 0.5) * 0.15,
         color: Math.random() > 0.5 ? '#00ffe1' : Math.random() > 0.5 ? '#b400ff' : '#e8a84a',
-        opacity: 0.05 + Math.random() * 0.15,
+        opacity: 0.25 + Math.random() * 0.5, // Massively increased opacity (was 0.05-0.2)
       };
     });
   }, []);
@@ -598,40 +598,43 @@ const HardwareDebrisField = () => {
           <div key={d.id} style={{
             position: 'absolute', left: d.left, top: d.top,
             perspective: '800px', zIndex: 2, pointerEvents: 'none',
-            transform: `scale(${d.size}) translateY(${Math.sin(t * 0.5 + d.id) * 20}px)`,
+            transform: `scale(${d.size}) translateY(${Math.sin(t * 0.5 + d.id) * 30}px)`,
             opacity: d.opacity,
           }}>
             {d.type === 'screen' && (
               <div style={{
-                width: '120px', height: '80px', background: '#050510',
-                border: `2px solid ${d.color}30`, transform: tilt,
-                boxShadow: `0 0 30px ${d.color}15`, borderRadius: '3px', overflow: 'hidden'
+                width: '140px', height: '90px', background: '#050510',
+                border: `2px solid ${d.color}60`, transform: tilt,
+                boxShadow: `0 0 40px ${d.color}30, inset 0 0 15px ${d.color}20`, borderRadius: '4px', overflow: 'hidden'
               }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.2) 3px, rgba(0,0,0,0.2) 6px)' }} />
-                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at center, ${d.color}15 0%, transparent 80%)` }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.3) 3px, rgba(0,0,0,0.3) 6px)' }} />
+                <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at center, ${d.color}30 0%, transparent 80%)` }} />
+                {/* Glitch flash occasionally */}
+                <div style={{ position: 'absolute', top: '20%', left: '10%', width: '30%', height: '2px', background: d.color, opacity: Math.sin(t * 10 + d.id) > 0.95 ? 0.8 : 0 }} />
               </div>
             )}
             
             {d.type === 'crt' && (
               <div style={{
-                width: '100px', height: '90px', background: '#020205',
-                border: `3px solid rgba(255,255,255,0.05)`, transform: tilt,
-                boxShadow: `inset 0 0 20px #000, 0 0 40px rgba(0,0,0,0.9)`, borderRadius: '10px'
+                width: '120px', height: '100px', background: '#020205',
+                border: `3px solid rgba(255,255,255,0.15)`, transform: tilt,
+                boxShadow: `inset 0 0 30px #000, 0 0 50px rgba(0,0,0,0.9), 0 0 20px ${d.color}15`, borderRadius: '12px'
               }}>
-                <div style={{ position: 'absolute', top: '10%', left: '10%', width: '80%', height: '80%', background: '#080812', borderRadius: '20px' }}>
-                  <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)` }} />
+                <div style={{ position: 'absolute', top: '8%', left: '8%', width: '84%', height: '84%', background: '#080812', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.06) 2px, rgba(255,255,255,0.06) 4px)` }} />
                 </div>
               </div>
             )}
             
             {d.type === 'keyboard' && (
               <div style={{
-                width: '140px', height: '60px', background: '#050508',
-                border: `1px solid rgba(255,255,255,0.1)`, transform: tilt,
-                display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2px', padding: '4px'
+                width: '160px', height: '70px', background: '#050508',
+                border: `1px solid rgba(255,255,255,0.2)`, transform: tilt,
+                display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '3px', padding: '6px',
+                boxShadow: `0 0 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.05)`
               }}>
                 {Array.from({length: 36}).map((_, i) => (
-                  <div key={i} style={{ background: `rgba(255,255,255,${0.05 + Math.random() * 0.1})`, borderRadius: '1px' }} />
+                  <div key={i} style={{ background: `rgba(255,255,255,${0.1 + Math.random() * 0.2})`, borderRadius: '1px', boxShadow: Math.random() > 0.9 ? `0 0 8px ${d.color}` : 'none' }} />
                 ))}
               </div>
             )}
